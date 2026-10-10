@@ -1,0 +1,23 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const src=fs.readFileSync(__dirname+'/../assets/app.js','utf8');
+const extract=(a,b)=>{let x=src.indexOf(a);assert(x>=0,a);let y=src.indexOf(b,x+a.length);assert(y>=0,b);return src.slice(x,y)};
+const code=[extract('const statuses=', 'let db,'),extract('const taskStates=', 'function projectTasks'),extract('function hasCycle(', 'function milestoneModal'),extract('function checkBackup(', 'function validateGithubBackup')].join('\n');
+const ctx={URL,Date,Set,Map,Error,Number,Array,RegExp,console};vm.createContext(ctx);vm.runInContext(code.replace('const statuses=','var statuses=').replace('const taskStates=','var taskStates=').replace('const priorities=','var priorities='),ctx);
+const date='2026-10-10T12:00:00Z',p={id:'p1',name:'Test',description:'',status:'Idea',progress:0,repository:'',created:date,updated:date};
+const base=()=>({format:'project-command-404',version:2,projects:[p],events:[],tasks:[],milestones:[]});
+let count=0;function ok(name,fn){fn();console.log('PASS',name);count++}function bad(name,fn){ok(name,()=>assert.throws(fn))}
+ok('backup valid v2',()=>ctx.checkBackup(base()));
+bad('reject dependency to unknown task',()=>{let b=base();b.tasks=[{id:'t1',projectId:'p1',title:'A',description:'',status:'Backlog',priority:'Media',milestoneId:'',dependsOn:['unknown']}];ctx.checkBackup(b)});
+bad('reject circular dependencies',()=>{let b=base();b.tasks=['t1','t2'].map((id,i)=>({id,projectId:'p1',title:id,description:'',status:'Backlog',priority:'Media',milestoneId:'',dependsOn:[i?'t1':'t2']}));ctx.checkBackup(b)});
+bad('reject cross-project dependencies',()=>{let b=base();b.projects.push({...p,id:'p2'});b.tasks=['p1','p2'].map((pid,i)=>({id:'t'+i,projectId:pid,title:pid,description:'',status:'Backlog',priority:'Media',milestoneId:'',dependsOn:i?['t0']:[]}));ctx.checkBackup(b)});
+bad('reject milestone from other project',()=>{let b=base();b.projects.push({...p,id:'p2'});b.milestones=[{id:'m1',projectId:'p2',name:'M',due:'',status:'Pendiente'}];b.tasks=[{id:'t1',projectId:'p1',title:'T',description:'',status:'Backlog',priority:'Media',milestoneId:'m1',dependsOn:[]}];ctx.checkBackup(b)});
+bad('reject invalid project repository URL',()=>{let b=base();b.projects[0]={...p,repository:'javascript:alert(1)'};ctx.checkBackup(b)});
+bad('reject duplicate project ID',()=>{let b=base();b.projects.push({...p});ctx.checkBackup(b)});
+console.log('All',count,'static validation tests passed');
+const urlCode=extract('function isSafeGithubUrl(', 'function validateGithubBackup(');
+vm.runInContext(urlCode,ctx);
+ok('accept real github link',()=>assert.equal(ctx.isSafeGithubUrl('https://github.com/owner/repo/issues/1'),true));
+ok('reject github hostname spoofing',()=>assert.equal(ctx.isSafeGithubUrl('https://github.com.evil.example/issues/1'),false));
+ok('reject embedded userinfo github spoofing',()=>assert.equal(ctx.isSafeGithubUrl('https://github.com@evil.example/issues/1'),false));
+ok('reject non-https github link',()=>assert.equal(ctx.isSafeGithubUrl('javascript:alert(1)'),false));
+console.log('Total',count,'validation tests passed');
