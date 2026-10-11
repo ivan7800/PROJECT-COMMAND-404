@@ -91,12 +91,14 @@ def run():
                 def restore():
                     page.once('dialog',lambda dialog: dialog.accept())
                     page.locator('[data-action="erase"]').click()
-                    page.get_by_text('Aún no hay proyectos').wait_for()
+                    page.locator('.data-actions').wait_for()
+                    assert '0 proyectos' in page.locator('.panel').inner_text()
                     with page.expect_file_chooser() as chooser_info:
                         page.locator('[data-action="import"]').click()
                     page.once('dialog',lambda dialog: dialog.accept())
                     chooser_info.value.set_files(str(backup_file[0]))
                     page.get_by_text('Copia restaurada correctamente').wait_for()
+                    page.locator('[data-view="overview"]').click()
                     page.get_by_text('PROYECTO QA AUTOMATICO').first.wait_for()
                     page.locator('[data-open]').first.click()
                     page.locator('[data-action="kanban"]').click()
