@@ -6,7 +6,7 @@
 
 - `node --check assets/app.js`: superada.
 - `node tests/static-qa.cjs`: 11/11 casos superados.
-- `python -m py_compile tests/e2e.py`: se vuelve a ejecutar para la versión actualizada.
+- `python -m py_compile tests/e2e.py`: superada con la suite E2E actualizada.
 - Los resultados de sintaxis y pruebas estáticas no sustituyen la ejecución del navegador.
 
 ## Alcance E2E actual
