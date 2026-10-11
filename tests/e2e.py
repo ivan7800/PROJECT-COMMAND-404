@@ -103,6 +103,7 @@ def run():
                     page.locator('[data-action="new-task"]').click()
                     page.locator('#taskName').fill('TAREA ARRASTRE QA')
                     page.locator('#taskForm button[type=submit]').click()
+                    page.locator('.task').filter(has_text='TAREA ARRASTRE QA').wait_for()
                     # Send the HTML5 drag events explicitly. Browser-level drag_to can miss
                     # the column drop zone in headless Chromium due to element geometry.
                     page.evaluate("""() => {
