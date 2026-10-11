@@ -74,7 +74,7 @@ Prueba E2E en Windows:
 2. El script instala Playwright y Chromium si hacen falta y lanza `tests/e2e.py`.
 3. Comprueba que el resultado indique que todos los casos han pasado.
 
-La prueba E2E usa un servidor local y un contexto temporal de Chromium. La suite cubre altas, edición y borrado de proyectos; persistencia y búsqueda; dependencias y arrastre Kanban; hitos; exportación/restauración y rechazo de copias corruptas; tema, menú móvil y errores 404/límite de API de GitHub simulados. La ampliación más reciente de estos casos aún debe pasar por GitHub Actions. El estado comprobado de esta entrega está descrito en [QA-REPORT.md](QA-REPORT.md).
+La prueba E2E usa un servidor local y un contexto temporal de Chromium. La suite cubre altas, edición y borrado de proyectos; persistencia y búsqueda; dependencias y arrastre Kanban; hitos; exportación/restauración y rechazo de copias corruptas; tema, menú móvil y errores 404/403 y fallo de red de GitHub simulados. La ampliación más reciente de estos casos aún debe pasar por GitHub Actions. El estado comprobado de esta entrega está descrito en [QA-REPORT.md](QA-REPORT.md).
 
 ## Datos y privacidad
 
