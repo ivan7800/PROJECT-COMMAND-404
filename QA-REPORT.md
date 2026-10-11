@@ -20,3 +20,10 @@ Fecha: 2026-10-10.
 Descomprimir ZIP; doble clic en `EJECUTAR_QA_WINDOWS.bat`. Requiere Python, conexión para descargar Playwright y Chromium en la primera ejecución. Usa navegador temporal separado del perfil personal. Si falla cualquier caso, no etiquetar como estable. El script devuelve código de salida no cero.
 
 **Veredicto**: Release candidate, sin certificación v1.0.0 ni nota 9,5/10.
+
+
+## Actualización de CI — 2026-10-11
+
+- Se añadió `.github/workflows/quality.yml` para ejecutar en GitHub Actions la revisión de sintaxis JavaScript y Python, los casos estáticos y la suite E2E con Chromium en push a `main`, pull request o ejecución manual.
+- La E2E ahora incluye un ciclo de exportación, borrado y restauración de copia JSON y comprueba que sobreviven el proyecto y una tarea.
+- **Resultado de esta nueva ejecución CI: pendiente de confirmación.** El workflow se acaba de añadir y no se afirma que los casos E2E estén superados hasta que GitHub Actions termine en verde.
