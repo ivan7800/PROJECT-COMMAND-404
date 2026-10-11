@@ -1,39 +1,106 @@
-# PROJECT COMMAND 404 — v0.6.0 · Release Candidate
+# PROJECT COMMAND 404
 
-Incluye fases 1–5 y correcciones de fase 6. **No es una release certificada**: Chromium del entorno devuelve `ERR_BLOCKED_BY_ADMINISTRATOR` al abrir localhost, impidiendo QA de interacción y persistencia.
+**Panel local para organizar el ciclo de vida de tus proyectos**, desde la idea hasta la publicación. Registra tareas y dependencias, hitos, incidencias, decisiones, checklist QA y releases en un solo espacio.
 
-## Inicio
+> **Estado:** release candidate (v0.7.0). Las pruebas estáticas están superadas; las pruebas funcionales E2E en navegador aún están pendientes. Consulta [QA-REPORT.md](QA-REPORT.md) antes de tratar esta versión como estable.
 
-En Windows, ejecutar `INICIAR_WINDOWS.bat` con Python 3 instalado. O bien `python -m http.server 8765 --bind 127.0.0.1` y abrir http://127.0.0.1:8765/. Para GitHub Pages, publicar el contenido de esta carpeta en la raíz del repositorio.
+## Funciones
 
-## Correcciones
+- **Registro de proyectos:** estado, progreso, descripción y enlace al repositorio.
+- **Planificación:** tablero Kanban, tareas, prioridades, hitos y dependencias entre tareas.
+- **Seguimiento de calidad:** bugs, decisiones técnicas, comprobaciones QA y releases por proyecto.
+- **Radar:** indicadores locales de actividad, bloqueos, riesgos y preparación para revisión.
+- **GitHub Connect:** consulta explícita de información de repositorios públicos; no sincroniza cambios.
+- **Copias de seguridad:** exportación e importación JSON con validación de estructura.
+- **Experiencia local:** tema claro/oscuro, menú móvil y almacenamiento en IndexedDB.
 
-- Se acota el porcentaje mostrado en barras de progreso.
-- Se controla el error de URL GitHub mal formada.
-- Se rechazan URLs de repositorio con parámetros o fragmentos al introducirlas o importar copias.
+## Captura de pantalla
 
-## Comprobaciones pendientes antes de publicar como estable
+No se incluye una captura validada en el repositorio. Añádela aquí cuando exista un archivo revisado, por ejemplo `docs/screenshot.png`.
 
-- Crear, editar y borrar proyecto; recargar y verificar IndexedDB.
-- Crear tarea e hito, cambiar estados, bloquear tareas dependientes y verificar arrastre Kanban.
-- Registrar bug, decisión, QA y release; revisar métricas del radar.
-- Exportar JSON, borrar e importar; confirmar integridad y datos.
-- Probar GitHub Connect con repositorio público, 404, error de red y límites de API.
-- Probar teclado, móvil y navegadores reales.
+## Requisitos
 
-Los datos son locales y no cifrados. Exporta copias antes de actualizar. No hay sincronización automática.
+- Navegador moderno con JavaScript, IndexedDB y HTTPS o localhost.
+- Para servir la aplicación localmente: Python 3, o cualquier servidor estático equivalente.
+- Para ejecutar QA estático: Node.js.
+- Para ejecutar QA E2E: Python y conexión a Internet la primera vez, para instalar Playwright y Chromium.
 
+## Inicio rápido
 
-## Auditoría 0.6.1-RC
-Consulta `QA-REPORT.md`. Ejecuta `node tests/static-qa.cjs` para verificar las validaciones de importación de copias. Las pruebas en navegador siguen pendientes.
+### Windows
 
+1. Descarga o clona este repositorio.
+2. Abre una terminal en la carpeta del proyecto.
+3. Ejecuta:
 
-## v0.6.2-RC
-Se corrigen inconsistencias de dependencias de tareas completadas y se endurecen los enlaces GitHub importados. Ejecutar `node tests/static-qa.cjs` para validar 11 casos. La prueba E2E sigue pendiente.
+   ```bat
+   py -m http.server 8765 --bind 127.0.0.1
+   ```
 
-## v0.7.0-RC — QA automatizado para Windows
+4. Abre [http://127.0.0.1:8765/](http://127.0.0.1:8765/) en el navegador.
 
-- Ejecuta `EJECUTAR_QA_WINDOWS.bat` para instalar Playwright si falta, obtener Chromium y lanzar `tests/e2e.py`.
-- El conjunto E2E usa un servidor local en un puerto libre y un perfil de navegador aislado. No modifica tu navegador cotidiano ni datos reales.
-- Para ejecutar la validación estática también puedes usar `node tests/static-qa.cjs` (requiere Node.js).
-- **No es v1.0.0 estable:** falta ejecutar las pruebas funcionales y subsanar lo que encuentren. Consulta `QA-REPORT.md`.
+Si `py` no está disponible, usa `python -m http.server 8765 --bind 127.0.0.1`.
+
+### Linux y macOS
+
+Desde la carpeta del proyecto:
+
+```bash
+python3 -m http.server 8765 --bind 127.0.0.1
+```
+
+Abre [http://127.0.0.1:8765/](http://127.0.0.1:8765/).
+
+### GitHub Pages
+
+El proyecto es estático. En la configuración del repositorio, activa **Settings → Pages**, elige la rama `main` y la carpeta `/ (root)`. Cuando Pages termine de desplegar, abre la URL que GitHub indique.
+
+## Pruebas
+
+Validación estática (Node.js):
+
+```bash
+node --check assets/app.js
+node tests/static-qa.cjs
+```
+
+Prueba E2E en Windows:
+
+1. Ejecuta `EJECUTAR_QA_WINDOWS.bat`.
+2. El script instala Playwright y Chromium si hacen falta y lanza `tests/e2e.py`.
+3. Comprueba que el resultado indique que todos los casos han pasado.
+
+La prueba E2E usa un servidor local y un perfil temporal de Chromium. Su resultado no está certificado hasta que se ejecute correctamente en un equipo compatible. El estado comprobado de esta entrega está descrito en [QA-REPORT.md](QA-REPORT.md).
+
+## Datos y privacidad
+
+- Los proyectos y registros se guardan en IndexedDB del navegador de ese dispositivo.
+- No hay cuenta, backend, sincronización automática ni telemetría declarada por la aplicación.
+- GitHub Connect realiza consultas solo cuando el usuario las solicita; el navegador puede comunicarse con GitHub.
+- Los datos locales no están cifrados. Protege el dispositivo y exporta copias JSON con cuidado: pueden contener información privada.
+- Borrar los datos del navegador puede eliminar los registros. Usa **Datos y copias** para exportar una copia periódicamente.
+
+## Limitaciones conocidas
+
+- No existe sincronización entre navegadores o dispositivos.
+- La información de GitHub depende de la API pública y de sus límites; no es una integración autenticada.
+- El radar presenta indicadores orientativos calculados con los datos registrados. No certifica calidad ni sustituye pruebas ejecutadas.
+- La certificación E2E y una revisión visual completa siguen pendientes, según el informe QA.
+
+## Estructura principal
+
+- `index.html`: punto de entrada.
+- `assets/app.js`: lógica de la aplicación.
+- `assets/styles.css`: estilos y diseño adaptable.
+- `tests/static-qa.cjs`: validaciones estáticas.
+- `tests/e2e.py`: pruebas funcionales con Playwright.
+- `EJECUTAR_QA_WINDOWS.bat`: instalación y ejecución guiada de E2E en Windows.
+- `QA-REPORT.md`: resultados y pendientes de QA.
+
+## Contribuciones y licencia
+
+Las contribuciones pueden proponerse mediante issues o pull requests. Aún no se ha especificado una licencia de código en este repositorio; hasta que se añada una, no se debe asumir que el contenido puede reutilizarse, modificarse o redistribuirse libremente.
+
+## Historial
+
+Las correcciones y notas de auditoría de versiones anteriores están documentadas en el historial de commits y en [QA-REPORT.md](QA-REPORT.md). Este README describe la versión que contiene la rama principal actualmente.
