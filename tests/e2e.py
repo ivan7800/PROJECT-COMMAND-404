@@ -188,7 +188,12 @@ def run():
                     page.locator('#githubLookup button[type=submit]').click()
                     page.get_by_text('Límite de GitHub alcanzado o acceso denegado').wait_for()
                     page.unroute('https://api.github.com/**')
-                test('GitHub: URL, 404 y límite de API', github_error)
+                    page.route('https://api.github.com/**',lambda route:route.abort('failed'))
+                    page.locator('#githubLookup button[type=submit]').click()
+                    page.get_by_text('No se pudo consultar GitHub').wait_for()
+                    assert page.locator('#githubResults .warning').inner_text().strip()
+                    page.unroute('https://api.github.com/**')
+                test('GitHub: URL, 404, 403 y error de red', github_error)
                 def mobile():
                     page.set_viewport_size({'width':390,'height':844})
                     page.locator('#menuBtn').click()
