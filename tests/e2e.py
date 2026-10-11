@@ -104,7 +104,24 @@ def run():
                     page.locator('#taskName').fill('TAREA ARRASTRE QA')
                     page.locator('#taskForm button[type=submit]').click()
                     task_card=page.locator('.task').filter(has_text='TAREA ARRASTRE QA')
-                    task_card.drag_to(page.locator('.kanban-column').nth(1))
+                    # Send the HTML5 drag events explicitly. Browser-level drag_to can miss
+                    # the column drop zone in headless Chromium due to element geometry.
+                    page.evaluate("""() => {
+                        const source = [...document.querySelectorAll('.task')]
+                            .find(el => el.innerText.includes('TAREA ARRASTRE QA'));
+                        const target = document.querySelectorAll('.kanban-column')[1];
+                        if (!source || !target) throw new Error('No se encontró origen o destino del arrastre');
+                        const dataTransfer = new DataTransfer();
+                        source.dispatchEvent(new DragEvent('dragstart', {
+                            bubbles: true, cancelable: true, dataTransfer
+                        }));
+                        target.dispatchEvent(new DragEvent('dragover', {
+                            bubbles: true, cancelable: true, dataTransfer
+                        }));
+                        target.dispatchEvent(new DragEvent('drop', {
+                            bubbles: true, cancelable: true, dataTransfer
+                        }));
+                    }""")
                     page.locator('.kanban-column').nth(1).get_by_text('TAREA ARRASTRE QA').wait_for()
                 test('Kanban: arrastrar tarjeta',drag_drop)
                 def milestone():
