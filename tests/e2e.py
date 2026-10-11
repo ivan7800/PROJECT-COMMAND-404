@@ -92,11 +92,10 @@ def run():
                     page.once('dialog',lambda dialog: dialog.accept())
                     page.locator('[data-action="erase"]').click()
                     page.get_by_text('Aún no hay proyectos').wait_for()
-                    page.locator('[data-action="import"]').click()
                     with page.expect_file_chooser() as chooser_info:
-                        page.locator('#importFile').click()
-                    chooser_info.value.set_files(str(backup_file[0]))
+                        page.locator('[data-action="import"]').click()
                     page.once('dialog',lambda dialog: dialog.accept())
+                    chooser_info.value.set_files(str(backup_file[0]))
                     page.get_by_text('Copia restaurada correctamente').wait_for()
                     page.get_by_text('PROYECTO QA AUTOMATICO').first.wait_for()
                     page.locator('[data-open]').first.click()
