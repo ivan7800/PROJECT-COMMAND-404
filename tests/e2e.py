@@ -84,9 +84,10 @@ def run():
                     page.locator(f'input[name="dependency"][value="{parent}"]').check()
                     page.locator('#taskForm button[type=submit]').click()
                     page.get_by_text('TAREA DEPENDIENTE QA').first.wait_for()
-                    page.locator('[data-move]').filter(has=page.locator('option:checked')).count()
-                    task_ids={el.inner_text():el.get_attribute('data-drag') for el in page.locator('.task').all()}
-                    return task_ids
+                    return {
+                        'TAREA QA':page.get_by_role('heading',name='TAREA QA',exact=True).locator('xpath=..').get_attribute('data-drag'),
+                        'TAREA DEPENDIENTE QA':page.get_by_role('heading',name='TAREA DEPENDIENTE QA',exact=True).locator('xpath=..').get_attribute('data-drag')
+                    }
                 task_ids=[]
                 def dependencies():
                     ids=task_ids[0]
