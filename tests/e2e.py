@@ -5,6 +5,7 @@ import json
 import shutil
 import socketserver
 import threading
+import tempfile
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -25,6 +26,7 @@ def run():
             errors = []
             page.on('pageerror', lambda err: errors.append(str(err)))
             passed = []
+            backup_file = []
             def test(name, fn):
                 fn(); passed.append(name); print('PASS', name)
             try:
@@ -73,15 +75,34 @@ def run():
                 test('Centro QA y modal de bugs', quality)
                 def export():
                     page.locator('[data-view="data"]').click()
-                    with page.expect_download() as d: page.locator('[data-action="export"]').click()
+                    with page.expect_download() as d:
+                        page.locator('[data-action="export"]').click()
                     download=d.value
                     assert download.suggested_filename.endswith('.json')
-                    path=ROOT/'tests'/'backup-e2e-temp.json'
+                    tmp=tempfile.NamedTemporaryFile(prefix='project-command-e2e-',suffix='.json',delete=False)
+                    tmp.close()
+                    path=Path(tmp.name)
                     download.save_as(path)
                     data=json.loads(path.read_text(encoding='utf-8'))
                     assert any(p['name']=='PROYECTO QA AUTOMATICO' for p in data['projects'])
-                    path.unlink()
+                    assert any(t['title']=='TAREA QA' for t in data['tasks'])
+                    backup_file.append(path)
                 test('Exportación JSON',export)
+                def restore():
+                    page.once('dialog',lambda dialog: dialog.accept())
+                    page.locator('[data-action="erase"]').click()
+                    page.get_by_text('Aún no hay proyectos').wait_for()
+                    page.locator('[data-action="import"]').click()
+                    with page.expect_file_chooser() as chooser_info:
+                        page.locator('#importFile').click()
+                    chooser_info.value.set_files(str(backup_file[0]))
+                    page.once('dialog',lambda dialog: dialog.accept())
+                    page.get_by_text('Copia restaurada correctamente').wait_for()
+                    page.get_by_text('PROYECTO QA AUTOMATICO').first.wait_for()
+                    page.locator('[data-open]').first.click()
+                    page.locator('[data-action="kanban"]').click()
+                    page.get_by_text('TAREA QA').first.wait_for()
+                test('Borrar y restaurar copia JSON',restore)
                 def theme():
                     page.locator('#themeBtn').click()
                     assert 'theme-light' in page.locator('body').get_attribute('class')
@@ -105,5 +126,7 @@ def run():
                 print(f'RESULTADO: {len(passed)}/{len(passed)} pruebas superadas; 0 errores JS')
             finally:
                 context.close();browser.close();server.shutdown()
+                for path in backup_file:
+                    path.unlink(missing_ok=True)
 
 if __name__ == '__main__':run()
