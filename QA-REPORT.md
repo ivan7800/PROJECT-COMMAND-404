@@ -26,4 +26,5 @@ Descomprimir ZIP; doble clic en `EJECUTAR_QA_WINDOWS.bat`. Requiere Python, cone
 
 - Se añadió `.github/workflows/quality.yml` para ejecutar en GitHub Actions la revisión de sintaxis JavaScript y Python, los casos estáticos y la suite E2E con Chromium en push a `main`, pull request o ejecución manual.
 - La E2E ahora incluye un ciclo de exportación, borrado y restauración de copia JSON y comprueba que sobreviven el proyecto y una tarea.
-- **Resultado de esta nueva ejecución CI: pendiente de confirmación.** El workflow se acaba de añadir y no se afirma que los casos E2E estén superados hasta que GitHub Actions termine en verde.
+- **Comprobaciones realizadas en esta revisión:** `node --check assets/app.js`, `node tests/static-qa.cjs` (11/11) y `python -m py_compile tests/e2e.py`: superadas sobre los archivos publicados.
+- **E2E en Chromium y primera ejecución CI: pendientes de confirmación.** El entorno local de revisión no tiene Playwright instalado y GitHub aún no muestra un estado para el workflow. No se afirma que los casos E2E estén superados hasta que GitHub Actions termine en verde.
