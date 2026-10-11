@@ -1,30 +1,38 @@
-# PROJECT COMMAND 404 — Informe QA v0.7.0-RC
+# PROJECT COMMAND 404 — Informe QA
 
-Fecha: 2026-10-10.
+**Estado actual:** release candidate v0.7.0. La CI anterior aparece verde en la captura de GitHub (**Quality checks #10**, ejecución manual en `main`), pero después se ampliaron las pruebas E2E. Esa ampliación aún debe ejecutarse antes de certificar la release.
 
-## Resultado confirmado
+## Comprobaciones locales de código
 
-- `node --check assets/app.js`: SUPERADO.
-- `node tests/static-qa.cjs`: 11/11 casos SUPERADOS.
-- `python -m py_compile tests/e2e.py`: SUPERADO (sintaxis de pruebas).
-- Paquete ZIP: comprobación CRC realizada al empaquetar.
+- `node --check assets/app.js`: superada.
+- `node tests/static-qa.cjs`: 11/11 casos superados.
+- `python -m py_compile tests/e2e.py`: se vuelve a ejecutar para la versión actualizada.
+- Los resultados de sintaxis y pruebas estáticas no sustituyen la ejecución del navegador.
 
-## Resultado NO confirmado
+## Alcance E2E actual
 
-- La ejecución de `python tests/e2e.py` NO ha podido completar pruebas interactivas en este entorno: Chromium del sistema se inicia, pero la navegación a http://127.0.0.1 devuelve `net::ERR_BLOCKED_BY_ADMINISTRATOR`. Esto **no** implica fallo de la aplicación ni que pase la prueba.
-- Las pruebas E2E (dashboard, altas, recarga IndexedDB, filtros, Kanban, hitos, QA, exportación, temas, GitHub inválido, menú móvil y errores JS) quedan PENDIENTES de ejecutarse en Windows.
-- Pruebas de importación y restauración, drag-and-drop, integración GitHub real, seguridad y regresión visual completa: PENDIENTES.
+La suite `tests/e2e.py` comprueba:
 
-## Ejecutar en Windows
+- Inicio, modal, altas, edición y borrado de proyectos.
+- Persistencia, búsqueda y filtros.
+- Crear/mover tareas; dependencias bloqueantes y desbloqueo.
+- Arrastrar una tarjeta Kanban.
+- Crear hitos y abrir el centro QA.
+- Exportar, borrar y restaurar una copia válida con proyecto y tareas.
+- Rechazar un JSON inválido sin sustituir los datos actuales.
+- Tema claro, menú móvil y ausencia de errores JavaScript.
+- GitHub Connect: URL inválida, respuestas simuladas 404 y 403 para comprobar los mensajes de error y límite de API.
 
-Descomprimir ZIP; doble clic en `EJECUTAR_QA_WINDOWS.bat`. Requiere Python, conexión para descargar Playwright y Chromium en la primera ejecución. Usa navegador temporal separado del perfil personal. Si falla cualquier caso, no etiquetar como estable. El script devuelve código de salida no cero.
+Las respuestas HTTP de GitHub se simulan deliberadamente en E2E para hacer la prueba reproducible y no depender de Internet ni de los límites de la API. No equivalen a una validación de conectividad en producción.
 
-**Veredicto**: Release candidate, sin certificación v1.0.0 ni nota 9,5/10.
+## Pendiente para declarar v1.0.0
 
+1. Ejecutar la versión actual de la suite en GitHub Actions y corregir cualquier fallo.
+2. Hacer una revisión visual y de teclado en móvil y en otro navegador además de Chromium.
+3. Confirmar que la documentación y los textos visibles de la aplicación dejan de indicar RC al preparar la release.
 
-## Actualización de CI — 2026-10-11
+## Ejecución local en Windows
 
-- Se añadió `.github/workflows/quality.yml` para ejecutar en GitHub Actions la revisión de sintaxis JavaScript y Python, los casos estáticos y la suite E2E con Chromium en push a `main`, pull request o ejecución manual.
-- La E2E ahora incluye un ciclo de exportación, borrado y restauración de copia JSON y comprueba que sobreviven el proyecto y una tarea.
-- **Comprobaciones realizadas en esta revisión:** `node --check assets/app.js`, `node tests/static-qa.cjs` (11/11) y `python -m py_compile tests/e2e.py`: superadas sobre los archivos publicados.
-- **E2E en Chromium y primera ejecución CI: pendientes de confirmación.** El entorno local de revisión no tiene Playwright instalado y GitHub aún no muestra un estado para el workflow. No se afirma que los casos E2E estén superados hasta que GitHub Actions termine en verde.
+Descomprime el proyecto y ejecuta `EJECUTAR_QA_WINDOWS.bat`. La primera ejecución instala Playwright y Chromium; requiere Python y conexión a Internet. El navegador usa un contexto temporal. Si alguna prueba falla, no publiques la versión como estable.
+
+**No se afirma que v1.0.0 esté certificada hasta superar los puntos pendientes.**
