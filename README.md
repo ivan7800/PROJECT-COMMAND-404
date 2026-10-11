@@ -1,5 +1,7 @@
 # PROJECT COMMAND 404
 
+[![Quality checks](https://github.com/ivan7800/PROJECT-COMMAND-404/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/ivan7800/PROJECT-COMMAND-404/actions/workflows/quality.yml)
+
 **Panel local para organizar el ciclo de vida de tus proyectos**, desde la idea hasta la publicación. Registra tareas y dependencias, hitos, incidencias, decisiones, checklist QA y releases en un solo espacio.
 
 > **Estado:** release candidate (v0.7.0). Las pruebas estáticas están superadas; las pruebas funcionales E2E en navegador aún están pendientes. Consulta [QA-REPORT.md](QA-REPORT.md) antes de tratar esta versión como estable.
@@ -57,6 +59,8 @@ El proyecto es estático. En la configuración del repositorio, activa **Setting
 
 ## Pruebas
 
+GitHub Actions ejecuta automáticamente las comprobaciones en cada push a `main` y en pull requests dirigidas a `main`. También puede iniciarse manualmente desde la pestaña **Actions**. El badge superior muestra el resultado de la última ejecución aplicable.
+
 Validación estática (Node.js):
 
 ```bash
@@ -70,7 +74,7 @@ Prueba E2E en Windows:
 2. El script instala Playwright y Chromium si hacen falta y lanza `tests/e2e.py`.
 3. Comprueba que el resultado indique que todos los casos han pasado.
 
-La prueba E2E usa un servidor local y un perfil temporal de Chromium. Su resultado no está certificado hasta que se ejecute correctamente en un equipo compatible. El estado comprobado de esta entrega está descrito en [QA-REPORT.md](QA-REPORT.md).
+La prueba E2E usa un servidor local y un contexto temporal de Chromium. La suite cubre creación, persistencia, filtros, Kanban, hitos, copias JSON (incluida restauración), tema, validación de URL GitHub y menú móvil. Su resultado no está certificado hasta que la ejecución de GitHub Actions termine correctamente. El estado comprobado de esta entrega está descrito en [QA-REPORT.md](QA-REPORT.md).
 
 ## Datos y privacidad
 
