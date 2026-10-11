@@ -1,5 +1,4 @@
 """End-to-end smoke/regression suite. Uses a disposable browser profile."""
-import contextlib
 import http.server
 import json
 import shutil
