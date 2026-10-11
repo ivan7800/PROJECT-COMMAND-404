@@ -21,7 +21,7 @@ La suite `tests/e2e.py` comprueba:
 - Exportar, borrar y restaurar una copia válida con proyecto y tareas.
 - Rechazar un JSON inválido sin sustituir los datos actuales.
 - Tema claro, menú móvil y ausencia de errores JavaScript.
-- GitHub Connect: URL inválida, respuestas simuladas 404 y 403 para comprobar los mensajes de error y límite de API.
+- GitHub Connect: URL inválida, respuestas simuladas 404/403 y una petición abortada para comprobar los mensajes de error, límite y fallo de red.
 
 Las respuestas HTTP de GitHub se simulan deliberadamente en E2E para hacer la prueba reproducible y no depender de Internet ni de los límites de la API. No equivalen a una validación de conectividad en producción.
 
